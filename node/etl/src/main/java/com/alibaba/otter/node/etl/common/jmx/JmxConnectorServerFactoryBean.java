@@ -36,7 +36,7 @@ import com.alibaba.otter.shared.common.model.config.node.Node;
  */
 public class JmxConnectorServerFactoryBean extends ConnectorServerFactoryBean {
 
-    private String              SERVER_URL           = "service:jmx:rmi://127.0.0.1/jndi/rmi://127.0.0.1:{0}/mbean";
+    private String              SERVER_URL           = "service:jmx:rmi://127.0.0.1:{0}/jndi/rmi://127.0.0.1:{0}/mbean";
     private boolean             alwaysCreateRegistry = false;
     private ConfigClientService configClientService;
 
