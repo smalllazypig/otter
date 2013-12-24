@@ -93,7 +93,7 @@ public class CanalServiceImpl implements CanalService {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
 
                 try {
-                    CanalDO canal = canalDao.findById(canalId);
+                    Canal canal = findById(canalId);
                     canalDao.delete(canalId);
                     arbitrateViewService.removeCanal(canal.getName()); // 删除canal节点信息
                 } catch (Exception e) {
@@ -278,6 +278,10 @@ public class CanalServiceImpl implements CanalService {
 
     public void setAutoKeeperClusterService(AutoKeeperClusterService autoKeeperClusterService) {
         this.autoKeeperClusterService = autoKeeperClusterService;
+    }
+
+    public void setArbitrateViewService(ArbitrateViewService arbitrateViewService) {
+        this.arbitrateViewService = arbitrateViewService;
     }
 
 }
