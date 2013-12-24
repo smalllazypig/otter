@@ -28,8 +28,8 @@ import org.I0Itec.zkclient.IZkConnection;
 import org.I0Itec.zkclient.exception.ZkException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.KeeperException.NoNodeException;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.util.CollectionUtils;
 
@@ -57,8 +57,9 @@ import com.alibaba.otter.shared.common.utils.zookeeper.ZooKeeperx;
  */
 public class ArbitrateViewServiceImpl implements ArbitrateViewService {
 
-    private static final String CANAL_PATH = "/otter/canal/destinations/%s/%s/cursor";
-    private ZkClientx           zookeeper  = ZooKeeperClient.getInstance();
+    private static final String CANAL_PATH        = "/otter/canal/destinations/%s";
+    private static final String CANAL_CURSOR_PATH = CANAL_PATH + "/%s/cursor";
+    private ZkClientx           zookeeper         = ZooKeeperClient.getInstance();
 
     public MainStemEventData mainstemData(Long channelId, Long pipelineId) {
         String path = ManagePathUtils.getMainStem(channelId, pipelineId);
@@ -146,7 +147,8 @@ public class ArbitrateViewServiceImpl implements ArbitrateViewService {
                     if (prev != null) {// 对应的start时间为上一个节点的结束时间
                         stageStat.setStartTime(prev.getEndTime());
                     } else {
-                        stageStat.setStartTime(zkProcessStat.getMtime()); // process的最后修改时间,select await成功后会设置USED标志位
+                        stageStat.setStartTime(zkProcessStat.getMtime()); // process的最后修改时间,select
+                                                                          // await成功后会设置USED标志位
                     }
                     stageStat.setEndTime(zkStat.getMtime());
                     if (ArbitrateConstants.NODE_SELECTED.equals(stage)) {
@@ -155,7 +157,8 @@ public class ArbitrateViewServiceImpl implements ArbitrateViewService {
                         stageStat.setStage(StageType.EXTRACT);
                     } else if (ArbitrateConstants.NODE_TRANSFORMED.equals(stage)) {
                         stageStat.setStage(StageType.TRANSFORM);
-                        // } else if (ArbitrateConstants.NODE_LOADED.equals(stage)) {
+                        // } else if
+                        // (ArbitrateConstants.NODE_LOADED.equals(stage)) {
                         // stageStat.setStage(StageType.LOAD);
                     }
 
@@ -221,7 +224,7 @@ public class ArbitrateViewServiceImpl implements ArbitrateViewService {
     }
 
     public PositionEventData getCanalCursor(String destination, short clientId) {
-        String path = String.format(CANAL_PATH, destination, String.valueOf(clientId));
+        String path = String.format(CANAL_CURSOR_PATH, destination, String.valueOf(clientId));
         try {
             IZkConnection connection = zookeeper.getConnection();
             // zkclient会将获取stat信息和正常的操作分开，使用原生的zk进行优化
@@ -239,8 +242,13 @@ public class ArbitrateViewServiceImpl implements ArbitrateViewService {
     }
 
     public void removeCanalCursor(String destination, short clientId) {
-        String path = String.format(CANAL_PATH, destination, String.valueOf(clientId));
+        String path = String.format(CANAL_CURSOR_PATH, destination, String.valueOf(clientId));
         zookeeper.delete(path);
+    }
+
+    public void removeCanal(String destination) {
+        String path = String.format(CANAL_PATH, destination);
+        zookeeper.deleteRecursive(path);
     }
 
 }

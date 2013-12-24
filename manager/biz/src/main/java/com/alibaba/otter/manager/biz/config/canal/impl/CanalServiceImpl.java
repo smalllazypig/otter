@@ -37,6 +37,7 @@ import com.alibaba.otter.manager.biz.config.canal.CanalService;
 import com.alibaba.otter.manager.biz.config.canal.dal.CanalDAO;
 import com.alibaba.otter.manager.biz.config.canal.dal.dataobject.CanalDO;
 import com.alibaba.otter.manager.biz.config.node.impl.NodeServiceImpl;
+import com.alibaba.otter.shared.arbitrate.ArbitrateViewService;
 import com.alibaba.otter.shared.common.model.autokeeper.AutoKeeperCluster;
 import com.alibaba.otter.shared.common.utils.Assert;
 import com.alibaba.otter.shared.common.utils.JsonUtils;
@@ -51,6 +52,7 @@ public class CanalServiceImpl implements CanalService {
     private CanalDAO                 canalDao;
     private TransactionTemplate      transactionTemplate;
     private AutoKeeperClusterService autoKeeperClusterService;
+    private ArbitrateViewService     arbitrateViewService;
 
     /**
      * 添加
@@ -91,7 +93,9 @@ public class CanalServiceImpl implements CanalService {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
 
                 try {
+                    CanalDO canal = canalDao.findById(canalId);
                     canalDao.delete(canalId);
+                    arbitrateViewService.removeCanal(canal.getName()); // 删除canal节点信息
                 } catch (Exception e) {
                     logger.error("ERROR ## remove canal(" + canalId + ") has an exception!");
                     throw new ManagerException(e);
