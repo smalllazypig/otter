@@ -131,14 +131,14 @@ public class SqlUtils {
         // 设置变量
         String sourceValue = value;
         if (SqlUtils.isTextType(sqlType)) {
-            if ((sourceValue == null) || ((true == StringUtils.isEmpty(sourceValue)) && isEmptyStringNulled)) {
+            if ((sourceValue == null) || (true == StringUtils.isEmpty(sourceValue) && isEmptyStringNulled)) {
                 return isRequired ? REQUIRED_FIELD_NULL_SUBSTITUTE : null;
             } else {
                 return sourceValue;
             }
         } else {
             if (StringUtils.isEmpty(sourceValue)) {
-                return null;
+                return isEmptyStringNulled ? null : sourceValue;// oracle的返回null，保持兼容
             } else {
                 Class<?> requiredType = sqlTypeToJavaTypeMap.get(sqlType);
                 if (requiredType == null) {
