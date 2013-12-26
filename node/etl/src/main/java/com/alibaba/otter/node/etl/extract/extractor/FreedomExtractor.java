@@ -99,8 +99,8 @@ public class FreedomExtractor extends AbstractExtractor<DbBatch> {
                         DataMedia dataMedia = null;
                         Long tableId = Long.valueOf(tableIdColumn.getColumnValue());
                         eventData.setTableId(tableId);
-                        if (tableId <= 0) { //直接按照full_name进行查找
-                            //尝试直接根据schema+table name进行查找
+                        if (tableId <= 0) { // 直接按照full_name进行查找
+                            // 尝试直接根据schema+table name进行查找
                             EventColumn fullNameColumn = getMatchColumn(eventData.getColumns(), FULL_NAME);
                             if (fullNameColumn != null) {
                                 String[] names = StringUtils.split(fullNameColumn.getColumnValue(), ".");
@@ -114,11 +114,11 @@ public class FreedomExtractor extends AbstractExtractor<DbBatch> {
                         } else {
                             // 如果指定了tableId，需要按照tableId进行严格查找，如果没找到，那说明不需要进行同步
                             dataMedia = ConfigHelper.findDataMedia(pipeline,
-                                                                   Long.valueOf(tableIdColumn.getColumnValue()));
+                                Long.valueOf(tableIdColumn.getColumnValue()));
                         }
 
                         DbDialect dbDialect = dbDialectFactory.getDbDialect(pipeline.getId(),
-                                                                            (DbMediaSource) dataMedia.getSource());
+                            (DbMediaSource) dataMedia.getSource());
                         // 考虑offer[1-128]的配置模式
                         if (!dataMedia.getNameMode().getMode().isSingle()
                             || !dataMedia.getNamespaceMode().getMode().isSingle()) {
@@ -135,8 +135,9 @@ public class FreedomExtractor extends AbstractExtractor<DbBatch> {
 
                             if (hasError) {
                                 // 出现异常，需要记录一下
-                                logger.warn("dataMedia mode:{} , fullname:{} ", dataMedia.getMode(),
-                                            fullNameColumn == null ? null : fullNameColumn.getColumnValue());
+                                logger.warn("dataMedia mode:{} , fullname:{} ",
+                                    dataMedia.getMode(),
+                                    fullNameColumn == null ? null : fullNameColumn.getColumnValue());
                                 removeDatas.add(eventData);
                                 // 跳过这条记录
                                 continue;
@@ -150,7 +151,8 @@ public class FreedomExtractor extends AbstractExtractor<DbBatch> {
                         EventColumn typeColumn = getMatchColumn(eventData.getColumns(), TYPE);
                         EventType eventType = EventType.valuesOf(typeColumn.getColumnValue());
                         eventData.setEventType(eventType);
-                        if (eventType.isUpdate()) {// 如果是update强制修改为insert，这样可以在目标端执行merge sql
+                        if (eventType.isUpdate()) {// 如果是update强制修改为insert，这样可以在目标端执行merge
+                                                   // sql
                             eventData.setEventType(EventType.INSERT);
                         } else if (eventType.isDdl()) {
                             dbDialect.reloadTable(eventData.getSchemaName(), eventData.getTableName());
@@ -170,6 +172,7 @@ public class FreedomExtractor extends AbstractExtractor<DbBatch> {
                         }
                         // 构建字段
                         Column[] allColumns = table.getColumns();
+                        int pkIndex = 0;
                         for (int i = 0; i < allColumns.length; i++) {
                             Column column = allColumns[i];
                             if (column.isPrimaryKey()) {
@@ -177,12 +180,13 @@ public class FreedomExtractor extends AbstractExtractor<DbBatch> {
                                 newColumn.setIndex(i); // 设置下标
                                 newColumn.setColumnName(column.getName());
                                 newColumn.setColumnType(column.getTypeCode());
-                                newColumn.setColumnValue(pks[i]);
+                                newColumn.setColumnValue(pks[pkIndex]);
                                 newColumn.setKey(true);
-                                newColumn.setNull(pks[i] == null);
+                                newColumn.setNull(pks[pkIndex] == null);
                                 newColumn.setUpdate(true);
                                 // 添加到记录
                                 newColumns.add(newColumn);
+                                pkIndex++;
                             }
                         }
                         // 设置数据
