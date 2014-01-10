@@ -193,7 +193,6 @@ public class PipelineAction {
             return;
         }
         nav.redirectToLocation("pipelineList.htm?channelId=" + pipeline.getChannelId());
-
     }
 
 }

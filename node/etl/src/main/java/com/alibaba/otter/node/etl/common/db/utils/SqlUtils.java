@@ -253,6 +253,8 @@ public class SqlUtils {
             // }
         } else if (BigDecimal.class.equals(requiredType)) {
             value = rs.getBigDecimal(index);
+        } else if (BigInteger.class.equals(requiredType)) {
+            value = rs.getBigDecimal(index);
         } else if (Blob.class.equals(requiredType)) {
             value = rs.getBlob(index);
         } else if (Clob.class.equals(requiredType)) {
