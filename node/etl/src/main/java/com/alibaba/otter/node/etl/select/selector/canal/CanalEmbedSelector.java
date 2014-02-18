@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.otter.canal.common.CanalException;
 import com.alibaba.otter.canal.extend.communication.CanalConfigClient;
 import com.alibaba.otter.canal.extend.ha.MediaHAController;
 import com.alibaba.otter.canal.instance.core.CanalInstance;
@@ -149,14 +150,18 @@ public class CanalEmbedSelector implements OtterSelector {
                         }
                     }
 
-                    protected void startEventParserInternal(CanalEventParser parser) {
-                        super.startEventParserInternal(parser);
+                    protected void startEventParserInternal(CanalEventParser parser, boolean isGroup) {
+                        super.startEventParserInternal(parser, isGroup);
 
                         if (eventParser instanceof MysqlEventParser) {
                             MysqlEventParser mysqlEventParser = (MysqlEventParser) eventParser;
                             CanalHAController haController = mysqlEventParser.getHaController();
 
                             if (haController instanceof MediaHAController) {
+                                if (isGroup) {
+                                    throw new CanalException("not support group database use media HA");
+                                }
+
                                 ((MediaHAController) haController).setCanalHASwitchable(mysqlEventParser);
                             }
 
