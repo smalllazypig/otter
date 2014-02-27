@@ -57,7 +57,8 @@ public class AddressUtils {
         }
 
         String name = address.getHostAddress();
-        return (name != null && !EMPTY_IP.equals(name) && !LOCALHOST_IP.equals(name) && IP_PATTERN.matcher(name).matches());
+        return (name != null && !EMPTY_IP.equals(name) && !LOCALHOST_IP.equals(name) && IP_PATTERN.matcher(name)
+            .matches());
     }
 
     public static String getHostIp() {
@@ -80,7 +81,8 @@ public class AddressUtils {
         InetAddress localAddress = null;
         try {
             localAddress = InetAddress.getLocalHost();
-            if (isValidHostAddress(localAddress) && localAddress.getHostAddress().equals(ip)) {
+            if (isValidHostAddress(localAddress)
+                && (localAddress.getHostAddress().equals(ip) || localAddress.getHostName().equals(ip))) {
                 return true;
             }
         } catch (Throwable e) {
