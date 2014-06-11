@@ -121,6 +121,9 @@ public class RowDataHttpPipe extends AbstractHttpPipe<DbBatch, HttpPipeKey> {
             if (StringUtils.isNotEmpty(eventData.getDdlSchemaName())) {
                 rowDataBuilder.setDdlSchemaName(eventData.getDdlSchemaName());
             }
+            if (StringUtils.isNotEmpty(eventData.getHint())) {
+                rowDataBuilder.setHint(eventData.getHint());
+            }
             rowBatchBuilder.addRows(rowDataBuilder.build());// 添加一条rowData记录
         }
 
@@ -154,12 +157,12 @@ public class RowDataHttpPipe extends AbstractHttpPipe<DbBatch, HttpPipeKey> {
         try {
             output = new BufferedOutputStream(new FileOutputStream(file));
             com.alibaba.otter.node.etl.model.protobuf.BatchProto.RowBatch rowBatchProto = rowBatchBuilder.build();
-            output.write(ByteUtils.int2bytes(rowBatchProto.getSerializedSize()));//输出大小
-            rowBatchProto.writeTo(output);//输出row batch
+            output.write(ByteUtils.int2bytes(rowBatchProto.getSerializedSize()));// 输出大小
+            rowBatchProto.writeTo(output);// 输出row batch
 
             com.alibaba.otter.node.etl.model.protobuf.BatchProto.FileBatch fileBatchProto = fileBatchBuilder.build();
-            output.write(ByteUtils.int2bytes(fileBatchProto.getSerializedSize()));//输出大小
-            fileBatchProto.writeTo(output); //输出file batch
+            output.write(ByteUtils.int2bytes(fileBatchProto.getSerializedSize()));// 输出大小
+            fileBatchProto.writeTo(output); // 输出file batch
             output.flush();
         } catch (IOException e) {
             throw new PipeException("write_byte_error", e);
@@ -187,7 +190,8 @@ public class RowDataHttpPipe extends AbstractHttpPipe<DbBatch, HttpPipeKey> {
         String dataUrl = key.getUrl();
         Pipeline pipeline = configClientService.findPipeline(key.getIdentity().getPipelineId());
         DataRetriever dataRetriever = dataRetrieverFactory.createRetriever(pipeline.getParameters().getRetriever(),
-                                                                           dataUrl, downloadDir);
+            dataUrl,
+            downloadDir);
         File archiveFile = null;
         try {
             dataRetriever.connect();
@@ -257,6 +261,7 @@ public class RowDataHttpPipe extends AbstractHttpPipe<DbBatch, HttpPipeKey> {
                 eventData.setSize(rowDataProto.getSize());
                 eventData.setSql(rowDataProto.getSql());
                 eventData.setDdlSchemaName(rowDataProto.getDdlSchemaName());
+                eventData.setHint(rowDataProto.getHint());
                 // 添加到总记录
                 rowBatch.merge(eventData);
             }
@@ -297,7 +302,8 @@ public class RowDataHttpPipe extends AbstractHttpPipe<DbBatch, HttpPipeKey> {
         column.setColumnValue(columnProto.getValue());
         column.setKey(columnProto.getIsPrimaryKey());
         column.setIndex(columnProto.getIndex());
-        column.setUpdate(columnProto.getIsUpdate());// add by ljh 2012-08-30，标记变更字段
+        column.setUpdate(columnProto.getIsUpdate());// add by ljh
+                                                    // 2012-08-30，标记变更字段
         return column;
     }
 
@@ -311,7 +317,8 @@ public class RowDataHttpPipe extends AbstractHttpPipe<DbBatch, HttpPipeKey> {
         if (keyColumn.getColumnValue() != null) {
             columnBuilder.setValue(keyColumn.getColumnValue());
         }
-        columnBuilder.setIsUpdate(keyColumn.isUpdate());// add by ljh 2012-08-30，标记变更字段
+        columnBuilder.setIsUpdate(keyColumn.isUpdate());// add by ljh
+                                                        // 2012-08-30，标记变更字段
         return columnBuilder.build();
     }
 
@@ -319,8 +326,12 @@ public class RowDataHttpPipe extends AbstractHttpPipe<DbBatch, HttpPipeKey> {
     private String buildFileName(Identity identity, String prefix) {
         Date now = new Date();
         String time = new SimpleDateFormat(DATE_FORMAT).format(now);
-        return MessageFormat.format("{0}-{1}-{2}-{3}-{4}.gzip", prefix, time, String.valueOf(identity.getChannelId()),
-                                    String.valueOf(identity.getPipelineId()), String.valueOf(identity.getProcessId()));
+        return MessageFormat.format("{0}-{1}-{2}-{3}-{4}.gzip",
+            prefix,
+            time,
+            String.valueOf(identity.getChannelId()),
+            String.valueOf(identity.getPipelineId()),
+            String.valueOf(identity.getProcessId()));
     }
 
     // 构造proto对象

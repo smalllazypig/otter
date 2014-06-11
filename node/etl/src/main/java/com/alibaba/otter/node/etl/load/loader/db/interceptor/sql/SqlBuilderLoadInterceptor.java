@@ -108,7 +108,13 @@ public class SqlBuilderLoadInterceptor extends AbstractLoadInterceptor<DbLoadCon
                 currentData.getTableName(),
                 buildColumnNames(currentData.getKeys()));
         }
-        currentData.setSql(sql);
+
+        // 处理下hint sql
+        if (currentData.getHint() != null) {
+            currentData.setSql(currentData.getHint() + sql);
+        } else {
+            currentData.setSql(sql);
+        }
         return false;
     }
 

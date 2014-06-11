@@ -81,7 +81,8 @@ public class EventData implements ObjectData, Serializable {
     private long              pairId           = -1;
 
     /**
-     * 当eventType = CREATE/ALTER/ERASE时，就是对应的sql语句，其他情况为动态生成的INSERT/UPDATE/DELETE sql
+     * 当eventType =
+     * CREATE/ALTER/ERASE时，就是对应的sql语句，其他情况为动态生成的INSERT/UPDATE/DELETE sql
      */
     private String            sql;
 
@@ -104,6 +105,11 @@ public class EventData implements ObjectData, Serializable {
      * 是否为remedy补救数据，比如回环补救自动产生的数据，或者是freedom产生的手工订正数据
      */
     private boolean           remedy           = false;
+
+    /**
+     * 生成对应的hint内容
+     */
+    private String            hint;
 
     public long getTableId() {
         return tableId;
@@ -223,6 +229,14 @@ public class EventData implements ObjectData, Serializable {
 
     public void setRemedy(boolean remedy) {
         this.remedy = remedy;
+    }
+
+    public String getHint() {
+        return hint;
+    }
+
+    public void setHint(String hint) {
+        this.hint = hint;
     }
 
     // ======================== helper method =================

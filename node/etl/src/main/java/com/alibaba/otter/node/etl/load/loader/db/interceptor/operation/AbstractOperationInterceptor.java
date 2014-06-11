@@ -112,9 +112,11 @@ public abstract class AbstractOperationInterceptor extends AbstractLoadIntercept
     public void transactionBegin(DbLoadContext context, List<EventData> currentDatas, DbDialect dialect) {
         boolean needInfo = StringUtils.isNotEmpty(context.getPipeline().getParameters().getChannelInfo());
         if (context.getChannel().getPipelines().size() > 1 || needInfo) {// 如果是双向同步，需要记录clientId
+            String hint = currentDatas.get(0).getHint();
+            String sql = needInfo ? updateInfoSql : updateSql;
             threadLocal.remove();// 进入之前先清理
             int threadId = currentId();
-            updateMark(context, dialect, threadId, needInfo ? updateInfoSql : updateSql, needInfo);
+            updateMark(context, dialect, threadId, sql, needInfo, hint);
             threadLocal.set(threadId);
         }
     }
@@ -122,8 +124,10 @@ public abstract class AbstractOperationInterceptor extends AbstractLoadIntercept
     public void transactionEnd(DbLoadContext context, List<EventData> currentDatas, DbDialect dialect) {
         boolean needInfo = StringUtils.isNotEmpty(context.getPipeline().getParameters().getChannelInfo());
         if (context.getChannel().getPipelines().size() > 1 || needInfo) {// 如果是双向同步，需要记录clientId
+            String hint = currentDatas.get(0).getHint();
+            String sql = needInfo ? clearInfoSql : clearSql;
             Integer threadId = threadLocal.get();
-            updateMark(context, dialect, threadId, needInfo ? clearInfoSql : clearSql, needInfo);
+            updateMark(context, dialect, threadId, sql, needInfo, hint);
             threadLocal.remove();
         }
     }
@@ -131,7 +135,8 @@ public abstract class AbstractOperationInterceptor extends AbstractLoadIntercept
     /**
      * 更新一下事务标记
      */
-    private void updateMark(DbLoadContext context, DbDialect dialect, int threadId, String sql, boolean needInfo) {
+    private void updateMark(DbLoadContext context, DbDialect dialect, int threadId, String sql, boolean needInfo,
+                            String hint) {
         Identity identity = context.getIdentity();
         Channel channel = context.getChannel();
         // 获取dbDialect
@@ -149,13 +154,17 @@ public abstract class AbstractOperationInterceptor extends AbstractLoadIntercept
         if (needInfo) {
             String infoColumn = context.getPipeline().getParameters().getSystemMarkTableInfo();
             String info = context.getPipeline().getParameters().getChannelInfo();// 记录一下channelInfo
-            affectedCount = dialect.getJdbcTemplate().update(MessageFormat.format(sql, new Object[] { markTableName,
-                                                                     markTableColumn, infoColumn }),
-                                                             new Object[] { threadId, channel.getId(), info });
+            String esql = MessageFormat.format(sql, new Object[] { markTableName, markTableColumn, infoColumn });
+            if (hint != null) {
+                esql = hint + esql;
+            }
+            affectedCount = dialect.getJdbcTemplate().update(esql, new Object[] { threadId, channel.getId(), info });
         } else {
-            affectedCount = dialect.getJdbcTemplate().update(MessageFormat.format(sql, new Object[] { markTableName,
-                                                                     markTableColumn }),
-                                                             new Object[] { threadId, channel.getId() });
+            String esql = MessageFormat.format(sql, new Object[] { markTableName, markTableColumn });
+            if (hint != null) {
+                esql = hint + esql;
+            }
+            affectedCount = dialect.getJdbcTemplate().update(esql, new Object[] { threadId, channel.getId() });
         }
 
         if (affectedCount <= 0) {

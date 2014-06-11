@@ -60,6 +60,8 @@ message RowData {
     optional string			sql						= 14;
     /** current ddl schemaName **/
     optional string			ddlSchemaName			= 15;
+    /** dml/ddl sql **/
+    optional string			hint					= 16;
 }
 
 message Column {
