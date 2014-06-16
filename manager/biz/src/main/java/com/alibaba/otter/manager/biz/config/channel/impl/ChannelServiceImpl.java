@@ -27,6 +27,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.alibaba.otter.manager.biz.common.exceptions.InvalidConfigureException;
+import com.alibaba.otter.manager.biz.common.exceptions.InvalidConfigureException.INVALID_TYPE;
 import com.alibaba.otter.manager.biz.common.exceptions.ManagerException;
 import com.alibaba.otter.manager.biz.common.exceptions.RepeatConfigureException;
 import com.alibaba.otter.manager.biz.config.channel.ChannelService;
@@ -388,6 +390,25 @@ public class ChannelServiceImpl implements ChannelService {
 
                     ChannelStatus oldStatus = arbitrateManageService.channelEvent().status(channelDo.getId());
                     Channel channel = doToModel(channelDo);
+                    // 检查下ddl/home配置
+                    List<Pipeline> pipelines = channel.getPipelines();
+                    if (pipelines.size() > 1) {
+                        boolean ddlSync = true;
+                        boolean homeSync = true;
+                        for (Pipeline pipeline : pipelines) {
+                            homeSync &= pipeline.getParameters().isHome();
+                            ddlSync &= pipeline.getParameters().getDdlSync();
+                        }
+
+                        if (ddlSync) {
+                            throw new InvalidConfigureException(INVALID_TYPE.DDL);
+                        }
+
+                        if (homeSync) {
+                            throw new InvalidConfigureException(INVALID_TYPE.HOME);
+                        }
+                    }
+
                     channel.setStatus(oldStatus);
                     ChannelStatus newStatus = channelStatus;
                     if (newStatus != null) {

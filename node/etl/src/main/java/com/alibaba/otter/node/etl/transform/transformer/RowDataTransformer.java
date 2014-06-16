@@ -66,6 +66,7 @@ public class RowDataTransformer extends AbstractOtterTransformer<EventData, Even
         result.setSyncMode(data.getSyncMode());
         result.setSize(data.getSize());
         result.setHint(data.getHint());
+        result.setWithoutSchema(data.isWithoutSchema());
         if (data.getEventType().isDdl()) {
             // ddl不需要处理字段
             if (StringUtils.equalsIgnoreCase(result.getSchemaName(), data.getSchemaName())

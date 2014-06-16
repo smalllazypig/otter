@@ -25,6 +25,8 @@ import com.alibaba.citrus.turbine.dataresolver.FormField;
 import com.alibaba.citrus.turbine.dataresolver.FormGroup;
 import com.alibaba.citrus.turbine.dataresolver.Param;
 import com.alibaba.citrus.webx.WebxException;
+import com.alibaba.otter.manager.biz.common.exceptions.InvalidConfigureException;
+import com.alibaba.otter.manager.biz.common.exceptions.ManagerException;
 import com.alibaba.otter.manager.biz.common.exceptions.RepeatConfigureException;
 import com.alibaba.otter.manager.biz.config.channel.ChannelService;
 import com.alibaba.otter.manager.biz.config.pipeline.PipelineService;
@@ -133,13 +135,28 @@ public class ChannelAction extends AbstractAction {
     public void doStatus(@Param("pageIndex") int pageIndex, @Param("searchKey") String searchKey,
                          @Param("channelId") Long channelId, @Param("status") String status, Navigator nav)
                                                                                                            throws WebxException {
-
+        String errorType = null;
         if (status.equals("start")) {
-            channelService.startChannel(channelId);
+            try {
+                channelService.startChannel(channelId);
+            } catch (ManagerException e) {
+                if (e.getCause() instanceof InvalidConfigureException) {
+                    errorType = ((InvalidConfigureException) e.getCause()).getType().name();
+                }
+            } catch (InvalidConfigureException rce) {
+                errorType = rce.getType().name();
+            }
+
         } else if (status.equals("stop")) {
             channelService.stopChannel(channelId);
         }
-        nav.redirectToLocation("channelList.htm?pageIndex=" + pageIndex + "&searchKey=" + urlEncode(searchKey));
+
+        if (errorType != null) {
+            nav.redirectToLocation("channelList.htm?pageIndex=" + pageIndex + "&searchKey=" + urlEncode(searchKey)
+                                   + "&errorType=" + errorType);
+        } else {
+            nav.redirectToLocation("channelList.htm?pageIndex=" + pageIndex + "&searchKey=" + urlEncode(searchKey));
+        }
     }
 
     /**

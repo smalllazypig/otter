@@ -119,6 +119,18 @@ public class EventColumn implements Serializable {
         this.isUpdate = isUpdate;
     }
 
+    public EventColumn clone() {
+        EventColumn column = new EventColumn();
+        column.setIndex(index);
+        column.setColumnName(columnName);
+        column.setColumnType(columnType);
+        column.setColumnValue(columnValue);
+        column.setKey(isKey);
+        column.setNull(isNull);
+        column.setUpdate(isUpdate);
+        return column;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

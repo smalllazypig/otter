@@ -46,8 +46,8 @@ public class ChannelList {
     private ArbitrateManageService arbitrateManageService;
 
     public void execute(@Param("pageIndex") int pageIndex, @Param("searchKey") String searchKey,
-                        @Param("channelStatus") String status, @Param("channelId") Long channelId, Context context)
-                                                                                                                   throws Exception {
+                        @Param("channelStatus") String status, @Param("channelId") Long channelId,
+                        @Param("errorType") String errorType, Context context) throws Exception {
         @SuppressWarnings("unchecked")
         Map<String, Object> condition = new HashMap<String, Object>();
 
@@ -111,5 +111,6 @@ public class ChannelList {
         context.put("channels", seniorChannels);
         context.put("paginator", paginator);
         context.put("searchKey", searchKey);
+        context.put("errorType", errorType);
     }
 }

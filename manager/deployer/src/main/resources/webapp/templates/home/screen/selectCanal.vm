@@ -40,12 +40,11 @@ $control.setTemplate("home:navigation.vm")
    <!--列表-->
   <table border="0" cellspacing="0" cellpadding="0" class="list changecolor_g">
          <tr> 
-            <th width="8%">序号</th>
-            <th width="8%">Canal名字</th>
+            <th width="5%">序号</th>
+            <th width="12%">Canal名字</th>
 			<th width="8%">数据源类型</th>
-			<th width="10%">存储模式</th>
-			<th width="12%">Meta模式</th>
-			<th width="14%">索引模式</th>
+			<th width="10%">编码</th>
+			<th width="12%">链接配置</th>
         	<th width="24%">操作</th> 
          </tr>
            
@@ -54,9 +53,8 @@ $control.setTemplate("home:navigation.vm")
 				<td width="5%">$!seniorCanal.id</td>
 				<td width="5%">$!seniorCanal.name</td>
 				<td width="5%">$!seniorCanal.canalParameter.sourcingType</td>
-				<td width="5%">$!seniorCanal.canalParameter.storageMode</td>
-				<td width="5%">$!seniorCanal.canalParameter.metaMode</td>
-				<td width="5%">$!seniorCanal.canalParameter.indexMode</td>
+				<td width="5%">$!seniorCanal.canalParameter.connectionCharset</td>
+				<td width="5%">$!seniorCanal.getUrl()</td>
 				<td>
 					<input type="button" value="选择" onclick="javascript:returnSelected('$seniorCanal.id','$seniorCanal.name')">
 				</td>

@@ -308,3 +308,11 @@ $control.setTemplate("home:navigation.vm")
 	   #end
      </div>    
 </div>
+
+<script language="javascript">
+#if($!errorType == "DDL")
+	alert("一个channel中只允许开启单向ddl同步!");
+#elseif($!errorType == "HOME")
+	alert("一个channel中只允许单向开启为主站点!");
+#end
+</script>

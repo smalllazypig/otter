@@ -1938,6 +1938,10 @@ public final class BatchProto {
     // optional string hint = 16;
     boolean hasHint();
     String getHint();
+    
+    // optional bool withoutSchema = 17;
+    boolean hasWithoutSchema();
+    boolean getWithoutSchema();
   }
   public static final class RowData extends
       com.google.protobuf.GeneratedMessage
@@ -2337,6 +2341,16 @@ public final class BatchProto {
       }
     }
     
+    // optional bool withoutSchema = 17;
+    public static final int WITHOUTSCHEMA_FIELD_NUMBER = 17;
+    private boolean withoutSchema_;
+    public boolean hasWithoutSchema() {
+      return ((bitField0_ & 0x00002000) == 0x00002000);
+    }
+    public boolean getWithoutSchema() {
+      return withoutSchema_;
+    }
+    
     private void initFields() {
       tableId_ = 0L;
       schemaName_ = "";
@@ -2354,6 +2368,7 @@ public final class BatchProto {
       sql_ = "";
       ddlSchemaName_ = "";
       hint_ = "";
+      withoutSchema_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2414,6 +2429,9 @@ public final class BatchProto {
       }
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
         output.writeBytes(16, getHintBytes());
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        output.writeBool(17, withoutSchema_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2487,6 +2505,10 @@ public final class BatchProto {
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(16, getHintBytes());
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(17, withoutSchema_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2659,6 +2681,8 @@ public final class BatchProto {
         bitField0_ = (bitField0_ & ~0x00004000);
         hint_ = "";
         bitField0_ = (bitField0_ & ~0x00008000);
+        withoutSchema_ = false;
+        bitField0_ = (bitField0_ & ~0x00010000);
         return this;
       }
       
@@ -2776,6 +2800,10 @@ public final class BatchProto {
           to_bitField0_ |= 0x00001000;
         }
         result.hint_ = hint_;
+        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
+          to_bitField0_ |= 0x00002000;
+        }
+        result.withoutSchema_ = withoutSchema_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2909,6 +2937,9 @@ public final class BatchProto {
         if (other.hasHint()) {
           setHint(other.getHint());
         }
+        if (other.hasWithoutSchema()) {
+          setWithoutSchema(other.getWithoutSchema());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -3021,6 +3052,11 @@ public final class BatchProto {
             case 130: {
               bitField0_ |= 0x00008000;
               hint_ = input.readBytes();
+              break;
+            }
+            case 136: {
+              bitField0_ |= 0x00010000;
+              withoutSchema_ = input.readBool();
               break;
             }
           }
@@ -3978,6 +4014,27 @@ public final class BatchProto {
         bitField0_ |= 0x00008000;
         hint_ = value;
         onChanged();
+      }
+      
+      // optional bool withoutSchema = 17;
+      private boolean withoutSchema_ ;
+      public boolean hasWithoutSchema() {
+        return ((bitField0_ & 0x00010000) == 0x00010000);
+      }
+      public boolean getWithoutSchema() {
+        return withoutSchema_;
+      }
+      public Builder setWithoutSchema(boolean value) {
+        bitField0_ |= 0x00010000;
+        withoutSchema_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearWithoutSchema() {
+        bitField0_ = (bitField0_ & ~0x00010000);
+        withoutSchema_ = false;
+        onChanged();
+        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:com.alibaba.otter.node.etl.model.protobuf.RowData)
@@ -5585,7 +5642,7 @@ public final class BatchProto {
       "\tFileBatch\022E\n\010identity\030\001 \001(\01323.com.aliba" +
       "ba.otter.node.etl.model.protobuf.Identit" +
       "y\022B\n\005files\030\002 \003(\01323.com.alibaba.otter.nod",
-      "e.etl.model.protobuf.FileData\"\275\003\n\007RowDat" +
+      "e.etl.model.protobuf.FileData\"\324\003\n\007RowDat" +
       "a\022\017\n\007tableId\030\001 \001(\003\022\022\n\nschemaName\030\002 \001(\t\022\021" +
       "\n\ttableName\030\003 \001(\t\022\021\n\teventType\030\004 \001(\t\022B\n\007" +
       "oldKeys\030\005 \003(\01321.com.alibaba.otter.node.e" +
@@ -5596,14 +5653,15 @@ public final class BatchProto {
       "\013executeTime\030\010 \001(\003\022\016\n\006pairId\030\t \001(\003\022\020\n\010sy" +
       "ncMode\030\n \001(\t\022\027\n\017syncConsistency\030\013 \001(\t\022\014\n",
       "\004size\030\014 \001(\003\022\016\n\006remedy\030\r \001(\010\022\013\n\003sql\030\016 \001(\t" +
-      "\022\025\n\rddlSchemaName\030\017 \001(\t\022\014\n\004hint\030\020 \001(\t\"z\n" +
-      "\006Column\022\r\n\005index\030\001 \001(\005\022\014\n\004name\030\002 \001(\t\022\r\n\005" +
-      "value\030\003 \001(\t\022\024\n\014isPrimaryKey\030\004 \001(\010\022\016\n\006isN" +
-      "ull\030\005 \001(\010\022\014\n\004type\030\006 \001(\005\022\020\n\010isUpdate\030\007 \001(" +
-      "\010\"\207\001\n\010FileData\022\021\n\teventType\030\001 \001(\t\022\021\n\tnam" +
-      "espace\030\002 \001(\t\022\014\n\004path\030\003 \001(\t\022\030\n\020lastModifi" +
-      "edTime\030\004 \001(\003\022\014\n\004size\030\005 \001(\003\022\017\n\007tableId\030\006 " +
-      "\001(\003\022\016\n\006pairId\030\t \001(\003B\016B\nBatchProtoH\001"
+      "\022\025\n\rddlSchemaName\030\017 \001(\t\022\014\n\004hint\030\020 \001(\t\022\025\n" +
+      "\rwithoutSchema\030\021 \001(\010\"z\n\006Column\022\r\n\005index\030" +
+      "\001 \001(\005\022\014\n\004name\030\002 \001(\t\022\r\n\005value\030\003 \001(\t\022\024\n\014is" +
+      "PrimaryKey\030\004 \001(\010\022\016\n\006isNull\030\005 \001(\010\022\014\n\004type" +
+      "\030\006 \001(\005\022\020\n\010isUpdate\030\007 \001(\010\"\207\001\n\010FileData\022\021\n" +
+      "\teventType\030\001 \001(\t\022\021\n\tnamespace\030\002 \001(\t\022\014\n\004p" +
+      "ath\030\003 \001(\t\022\030\n\020lastModifiedTime\030\004 \001(\003\022\014\n\004s" +
+      "ize\030\005 \001(\003\022\017\n\007tableId\030\006 \001(\003\022\016\n\006pairId\030\t \001" +
+      "(\003B\016B\nBatchProtoH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5639,7 +5697,7 @@ public final class BatchProto {
           internal_static_com_alibaba_otter_node_etl_model_protobuf_RowData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_alibaba_otter_node_etl_model_protobuf_RowData_descriptor,
-              new java.lang.String[] { "TableId", "SchemaName", "TableName", "EventType", "OldKeys", "Keys", "Columns", "ExecuteTime", "PairId", "SyncMode", "SyncConsistency", "Size", "Remedy", "Sql", "DdlSchemaName", "Hint", },
+              new java.lang.String[] { "TableId", "SchemaName", "TableName", "EventType", "OldKeys", "Keys", "Columns", "ExecuteTime", "PairId", "SyncMode", "SyncConsistency", "Size", "Remedy", "Sql", "DdlSchemaName", "Hint", "WithoutSchema", },
               com.alibaba.otter.node.etl.model.protobuf.BatchProto.RowData.class,
               com.alibaba.otter.node.etl.model.protobuf.BatchProto.RowData.Builder.class);
           internal_static_com_alibaba_otter_node_etl_model_protobuf_Column_descriptor =

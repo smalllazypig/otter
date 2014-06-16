@@ -49,16 +49,17 @@ public class SqlBuilderLoadInterceptor extends AbstractLoadInterceptor<DbLoadCon
         EventType type = currentData.getEventType();
         String sql = null;
 
+        String schemaName = (currentData.isWithoutSchema() ? null : currentData.getSchemaName());
         // 注意insert/update语句对应的字段数序都是将主键排在后面
         if (type.isInsert()) {
             if (CollectionUtils.isEmpty(currentData.getColumns()) && sqlTemplate instanceof OracleSqlTemplate) { // 如果表为全主键，直接进行insert
                                                                                                                  // sql
-                sql = sqlTemplate.getInsertSql(currentData.getSchemaName(),
+                sql = sqlTemplate.getInsertSql(schemaName,
                     currentData.getTableName(),
                     buildColumnNames(currentData.getKeys()),
                     buildColumnNames(currentData.getColumns()));
             } else {
-                sql = sqlTemplate.getMergeSql(currentData.getSchemaName(),
+                sql = sqlTemplate.getMergeSql(schemaName,
                     currentData.getTableName(),
                     buildColumnNames(currentData.getKeys()),
                     buildColumnNames(currentData.getColumns()),
@@ -92,19 +93,16 @@ public class SqlBuilderLoadInterceptor extends AbstractLoadInterceptor<DbLoadCon
             }
 
             if (rowMode && !existOldKeys) {// 如果是行记录,并且不存在主键变更，考虑merge sql
-                sql = sqlTemplate.getMergeSql(currentData.getSchemaName(),
+                sql = sqlTemplate.getMergeSql(schemaName,
                     currentData.getTableName(),
                     keyColumns,
                     otherColumns,
                     new String[] {});
             } else {// 否则进行update sql
-                sql = sqlTemplate.getUpdateSql(currentData.getSchemaName(),
-                    currentData.getTableName(),
-                    keyColumns,
-                    otherColumns);
+                sql = sqlTemplate.getUpdateSql(schemaName, currentData.getTableName(), keyColumns, otherColumns);
             }
         } else if (type.isDelete()) {
-            sql = sqlTemplate.getDeleteSql(currentData.getSchemaName(),
+            sql = sqlTemplate.getDeleteSql(schemaName,
                 currentData.getTableName(),
                 buildColumnNames(currentData.getKeys()));
         }

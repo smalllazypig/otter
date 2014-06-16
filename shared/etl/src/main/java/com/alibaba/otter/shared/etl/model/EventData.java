@@ -111,6 +111,11 @@ public class EventData implements ObjectData, Serializable {
      */
     private String            hint;
 
+    /**
+     * 生成sql是否忽略schema,比如针对tddl/drds,需要忽略schema
+     */
+    private boolean           withoutSchema    = false;
+
     public long getTableId() {
         return tableId;
     }
@@ -239,6 +244,14 @@ public class EventData implements ObjectData, Serializable {
         this.hint = hint;
     }
 
+    public boolean isWithoutSchema() {
+        return withoutSchema;
+    }
+
+    public void setWithoutSchema(boolean withoutSchema) {
+        this.withoutSchema = withoutSchema;
+    }
+
     // ======================== helper method =================
 
     /**
@@ -253,6 +266,41 @@ public class EventData implements ObjectData, Serializable {
         }
 
         return columns;
+    }
+
+    private List<EventColumn> cloneColumn(List<EventColumn> columns) {
+        if (columns == null) {
+            return null;
+        }
+
+        List<EventColumn> cloneColumns = new ArrayList<EventColumn>();
+        for (EventColumn column : columns) {
+            cloneColumns.add(column.clone());
+        }
+
+        return cloneColumns;
+    }
+
+    public EventData clone() {
+        EventData data = new EventData();
+        data.setTableId(tableId);
+        data.setTableName(tableName);
+        data.setSchemaName(schemaName);
+        data.setDdlSchemaName(ddlSchemaName);
+        data.setEventType(eventType);
+        data.setExecuteTime(executeTime);
+        data.setKeys(cloneColumn(keys));
+        data.setColumns(cloneColumn(columns));
+        data.setOldKeys(cloneColumn(oldKeys));
+        data.setSize(size);
+        data.setPairId(pairId);
+        data.setSql(sql);
+        data.setSyncMode(syncMode);
+        data.setSyncConsistency(syncConsistency);
+        data.setRemedy(remedy);
+        data.setHint(hint);
+        data.setWithoutSchema(withoutSchema);
+        return null;
     }
 
     public String toString() {
