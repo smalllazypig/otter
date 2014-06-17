@@ -23,8 +23,10 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.slf4j.MDC;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.otter.node.etl.OtterConstants;
 import com.alibaba.otter.node.etl.common.datasource.DataSourceService;
 import com.alibaba.otter.node.etl.extract.exceptions.ExtractException;
 import com.alibaba.otter.shared.common.model.config.ConfigHelper;
@@ -92,6 +94,7 @@ public class ProcessorExtractor extends AbstractExtractor<DbBatch> {
 
                             @Override
                             public void run() {
+                                MDC.put(OtterConstants.splitPipelineLogFileKey, String.valueOf(pipeline.getId()));
                                 boolean process = eventProcessor.process(eventData);
                                 if (!process) {
                                     removeDatas.add(eventData);// 添加到删除记录中

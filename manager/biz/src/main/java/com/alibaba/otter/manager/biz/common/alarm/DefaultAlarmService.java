@@ -25,22 +25,25 @@ public class DefaultAlarmService extends AbstractAlarmService {
     private SystemParameterService systemParameterService;
 
     public void doSend(AlarmMessage data) throws Exception {
-        SimpleMailMessage mail = new SimpleMailMessage(); //只发送纯文本
+        SimpleMailMessage mail = new SimpleMailMessage(); // 只发送纯文本
         mail.setFrom(username);
-        mail.setSubject(TITLE);//主题  
-        mail.setText(data.getMessage());//邮件内容
+        mail.setSubject(TITLE);// 主题
+        mail.setText(data.getMessage());// 邮件内容
         String receiveKeys[] = StringUtils.split(StringUtils.replace(data.getReceiveKey(), ";", ","), ",");
 
         SystemParameter systemParameter = systemParameterService.find();
         List<String> mailAddress = new ArrayList<String>();
         for (String receiveKey : receiveKeys) {
             String receiver = convertToReceiver(systemParameter, receiveKey);
-            if (isMail(receiver)) {
-                if (receiver != null) {
-                    mailAddress.add(receiver);
+            String strs[] = StringUtils.split(StringUtils.replace(receiver, ";", ","), ",");
+            for (String str : strs) {
+                if (isMail(str)) {
+                    if (str != null) {
+                        mailAddress.add(str);
+                    }
+                } else if (isSms(str)) {
+                    // do nothing
                 }
-            } else if (isSms(receiver)) {
-                // do nothing
             }
         }
 
