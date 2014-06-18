@@ -69,13 +69,13 @@ import com.alibaba.otter.shared.etl.model.EventData;
  */
 public class CanalEmbedSelector implements OtterSelector {
 
-    private static final Logger    logger        = LoggerFactory.getLogger(CanalEmbedSelector.class);
-    private static final String    SEP           = SystemUtils.LINE_SEPARATOR;
-    private static final String    DATE_FORMAT   = "yyyy-MM-dd HH:mm:ss";
-    private static final int       maxEmptyTimes = 10;
-    private int                    logSplitSize  = 50;
-    private boolean                dump          = true;
-    private boolean                dumpDetail    = true;
+    private static final Logger    logger           = LoggerFactory.getLogger(CanalEmbedSelector.class);
+    private static final String    SEP              = SystemUtils.LINE_SEPARATOR;
+    private static final String    DATE_FORMAT      = "yyyy-MM-dd HH:mm:ss";
+    private static final int       maxEmptyTimes    = 10;
+    private int                    logSplitSize     = 50;
+    private boolean                dump             = true;
+    private boolean                dumpDetail       = true;
     private Long                   pipelineId;
     private CanalServerWithEmbeded canalServer;
     private ClientIdentity         clientIdentity;
@@ -85,13 +85,14 @@ public class CanalEmbedSelector implements OtterSelector {
 
     private String                 destination;
     private String                 filter;
-    private int                    batchSize     = 10000;
-    private long                   batchTimeout  = -1L;
-    private boolean                ddlSync       = true;
+    private int                    batchSize        = 10000;
+    private long                   batchTimeout     = -1L;
+    private boolean                ddlSync          = true;
+    private boolean                filterTableError = false;
 
     private CanalConfigClient      canalConfigClient;
-    private volatile boolean       running       = false;                                            // 是否处于运行中
-    private volatile long          lastEntryTime = 0;
+    private volatile boolean       running          = false;                                            // 是否处于运行中
+    private volatile long          lastEntryTime    = 0;
 
     public CanalEmbedSelector(Long pipelineId){
         this.pipelineId = pipelineId;
@@ -113,6 +114,8 @@ public class CanalEmbedSelector implements OtterSelector {
         batchSize = pipeline.getParameters().getMainstemBatchsize();
         batchTimeout = pipeline.getParameters().getBatchTimeout();
         ddlSync = pipeline.getParameters().getDdlSync();
+        // 暂时使用skip load代替
+        filterTableError = pipeline.getParameters().getSkipLoadException();
         if (pipeline.getParameters().getDumpSelector() != null) {
             dump = pipeline.getParameters().getDumpSelector();
         }
@@ -135,6 +138,7 @@ public class CanalEmbedSelector implements OtterSelector {
                 }
                 canal.getCanalParameter().setSlaveId(slaveId + pipelineId);
                 canal.getCanalParameter().setDdlIsolation(ddlSync);
+                canal.getCanalParameter().setFilterTableError(filterTableError);
 
                 CanalInstanceWithManager instance = new CanalInstanceWithManager(canal, filter) {
 

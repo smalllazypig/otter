@@ -39,6 +39,7 @@ import com.alibaba.otter.manager.biz.config.pipeline.dal.dataobject.PipelineDO;
 import com.alibaba.otter.manager.biz.config.pipeline.dal.dataobject.PipelineNodeRelationDO;
 import com.alibaba.otter.manager.biz.config.pipeline.dal.dataobject.PipelineNodeRelationDO.Location;
 import com.alibaba.otter.shared.arbitrate.ArbitrateManageService;
+import com.alibaba.otter.shared.arbitrate.ArbitrateViewService;
 import com.alibaba.otter.shared.common.model.config.data.DataMediaPair;
 import com.alibaba.otter.shared.common.model.config.data.DataMediaPairComparable;
 import com.alibaba.otter.shared.common.model.config.node.Node;
@@ -59,13 +60,13 @@ public class PipelineServiceImpl implements PipelineService {
     private NodeService             nodeService;
     private TransactionTemplate     transactionTemplate;
     private ArbitrateManageService  arbitrateManageService;
+    private ArbitrateViewService    arbitrateViewService;
 
     /**
      * 添加
      */
     public void create(final Pipeline pipeline) {
         Assert.assertNotNull(pipeline);
-
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
@@ -178,19 +179,29 @@ public class PipelineServiceImpl implements PipelineService {
     /**
      * 删除
      */
-    public void remove(Long pipelineId) {
+    public void remove(final Long pipelineId) {
         Assert.assertNotNull(pipelineId);
-        try {
-            PipelineDO pipelineDO = pipelineDao.findById(pipelineId);
-            if (pipelineDO != null) {
-                pipelineDao.delete(pipelineId);
-                pipelineNodeRelationDao.deleteByPipelineId(pipelineId);
-                arbitrateManageService.pipelineEvent().destory(pipelineDO.getChannelId(), pipelineId);
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    PipelineDO pipelineDO = pipelineDao.findById(pipelineId);
+                    if (pipelineDO != null) {
+                        pipelineDao.delete(pipelineId);
+                        pipelineNodeRelationDao.deleteByPipelineId(pipelineId);
+                        // 删除历史cursor
+                        String destination = pipelineDO.getParameters().getDestinationName();
+                        short clientId = pipelineDO.getParameters().getMainstemClientId();
+                        arbitrateViewService.removeCanalCursor(destination, clientId);
+                        arbitrateManageService.pipelineEvent().destory(pipelineDO.getChannelId(), pipelineId);
+                    }
+                } catch (Exception e) {
+                    logger.error("ERROR ## remove the pipeline(" + pipelineId + ") has an exception!");
+                    throw new ManagerException(e);
+                }
             }
-        } catch (Exception e) {
-            logger.error("ERROR ## remove the pipeline(" + pipelineId + ") has an exception!");
-            throw new ManagerException(e);
-        }
+        });
     }
 
     public int getCount() {
@@ -599,6 +610,10 @@ public class PipelineServiceImpl implements PipelineService {
 
     public void setArbitrateManageService(ArbitrateManageService arbitrateManageService) {
         this.arbitrateManageService = arbitrateManageService;
+    }
+
+    public void setArbitrateViewService(ArbitrateViewService arbitrateViewService) {
+        this.arbitrateViewService = arbitrateViewService;
     }
 
 }
