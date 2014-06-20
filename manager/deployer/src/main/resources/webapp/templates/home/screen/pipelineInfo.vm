@@ -83,6 +83,9 @@ $control.setTemplate("home:navigation.vm")
   <th>使用batch：</th><td>$!pipeline.parameters.useBatch</td>
   </tr>
   <tr class="super"> 
+  <th>跳过Select异常：</th><td>#if($!pipeline.parameters.skipSelectException) 开启 #else 关闭 #end</td>
+  </tr>
+  <tr class="super"> 
   <th>跳过Load异常：</th><td>#if($!pipeline.parameters.skipLoadException) 开启 #else 关闭 #end</td>
   </tr>
   <tr class="super"> 

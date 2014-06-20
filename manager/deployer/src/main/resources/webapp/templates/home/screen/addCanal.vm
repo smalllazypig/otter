@@ -418,11 +418,18 @@ $control.setTemplate("home:navigation.vm")
 		</td>
       </tr>
 	  </div>
-	  
+	  <tr>
+       <th>过滤表达式：</th>
+       <td>
+    		<textarea cols="45" rows="5" name="$canalParameterGroup.blackFilter.key">$!canalParameterGroup.blackFilter.value</textarea><span class="red">*</span>
+    		<br />
+    		<span class="red">#addCanalMessage ($canalParameterGroup.blackFilter)</span>
+	   </td>
+      </tr>
 	  <tr>
        <th>描述信息：</th>
        <td>
-    		<textarea cols="45" rows="5" name="$canalGroup.desc.key">$!canal.desc.value</textarea><span class="red">*</span>
+    		<textarea cols="45" rows="5" name="$canalGroup.desc.key">$!canalGroup.desc.value</textarea><span class="red">*</span>
     		<br />
     		<span class="red">#addCanalMessage ($canalGroup.desc)</span>
 	   </td>

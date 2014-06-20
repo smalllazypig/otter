@@ -202,6 +202,13 @@ $control.setTemplate("home:navigation.vm")
         </td>
       </tr>
 	  <tr class="super"> 
+        <th width="300">是否跳过Select异常：</th>
+        <td width="329">
+              <input type="radio" name="$pipelineParameterGroup.skipSelectException.key" value="true" id="RadioGroup2_0" class="radio"/>是
+              <input type="radio" name="$pipelineParameterGroup.skipSelectException.key" value="false" id="RadioGroup2_1" checked="checked" class="radio"/>否 
+        </td>
+      </tr>
+	  <tr class="super"> 
         <th width="300">是否跳过Load异常：</th>
         <td width="329">
               <input type="radio" name="$pipelineParameterGroup.skipLoadException.key" value="true" id="RadioGroup2_0" class="radio"/>是

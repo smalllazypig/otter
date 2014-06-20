@@ -141,6 +141,9 @@ $control.setTemplate("home:navigation.vm")
   <th>切换回退时间：</th><td>$!canal.canalParameter.fallbackIntervalInSeconds</td>
   </tr>
   <tr>
+  <th>过滤表达式：</th><td>$!canal.canalParameter.blackFilter</td>
+  </tr>
+  <tr>
   <th>描述信息：</th><td>$!canal.desc</td>
   </tr>
  </table>

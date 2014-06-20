@@ -192,8 +192,8 @@ public class PipelineServiceImpl implements PipelineService {
                         pipelineNodeRelationDao.deleteByPipelineId(pipelineId);
                         // 删除历史cursor
                         String destination = pipelineDO.getParameters().getDestinationName();
-                        short clientId = pipelineDO.getParameters().getMainstemClientId();
-                        arbitrateViewService.removeCanalCursor(destination, clientId);
+                        short clientId = pipelineDO.getId().shortValue();
+                        arbitrateViewService.removeCanal(destination, clientId);
                         arbitrateManageService.pipelineEvent().destory(pipelineDO.getChannelId(), pipelineId);
                     }
                 } catch (Exception e) {

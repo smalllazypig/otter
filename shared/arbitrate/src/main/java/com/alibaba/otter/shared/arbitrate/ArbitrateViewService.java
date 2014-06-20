@@ -56,6 +56,11 @@ public interface ArbitrateViewService {
     void removeCanalCursor(String destination, short clientId);
 
     /**
+     * 删除canal cursor + filter
+     */
+    void removeCanal(String destination, short clientId);
+
+    /**
      * 删除canal meta信息
      */
     void removeCanal(String destination);

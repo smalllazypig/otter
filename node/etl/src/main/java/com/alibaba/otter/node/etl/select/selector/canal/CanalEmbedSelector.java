@@ -115,7 +115,7 @@ public class CanalEmbedSelector implements OtterSelector {
         batchTimeout = pipeline.getParameters().getBatchTimeout();
         ddlSync = pipeline.getParameters().getDdlSync();
         // 暂时使用skip load代替
-        filterTableError = pipeline.getParameters().getSkipLoadException();
+        filterTableError = pipeline.getParameters().getSkipSelectException();
         if (pipeline.getParameters().getDumpSelector() != null) {
             dump = pipeline.getParameters().getDumpSelector();
         }

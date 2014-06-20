@@ -214,6 +214,13 @@ $control.setTemplate("home:navigation.vm")
             <input type="radio" name="$pipelineParameterGroup.useBatch.key" value="false" id="RadioGroup2_1" #if (!$pipeline.parameters.useBatch) checked="checked" #end class="radio"/>否
 		</td>
       </tr>
+	  <tr class="super"> 
+        <th width="300">跳过Select异常：</th>
+        <td width="329">
+              <input type="radio" name="$pipelineParameterGroup.skipSelectException.key" value="true" id="RadioGroup2_0" #if ($pipeline.parameters.skipSelectException) checked="checked" #end class="radio"/>是
+              <input type="radio" name="$pipelineParameterGroup.skipSelectException.key" value="false" id="RadioGroup2_1" #if (!$pipeline.parameters.skipSelectException) checked="checked" #end class="radio"/>否 
+        </td>
+      </tr>
 	   <tr class="super"> 
         <th width="300">跳过Load异常：</th>
         <td width="329">

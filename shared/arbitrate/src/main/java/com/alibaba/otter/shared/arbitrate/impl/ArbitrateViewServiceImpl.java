@@ -58,6 +58,7 @@ import com.alibaba.otter.shared.common.utils.zookeeper.ZooKeeperx;
 public class ArbitrateViewServiceImpl implements ArbitrateViewService {
 
     private static final String CANAL_PATH        = "/otter/canal/destinations/%s";
+    private static final String CANAL_DATA_PATH   = CANAL_PATH + "/%s";
     private static final String CANAL_CURSOR_PATH = CANAL_PATH + "/%s/cursor";
     private ZkClientx           zookeeper         = ZooKeeperClient.getInstance();
 
@@ -244,6 +245,12 @@ public class ArbitrateViewServiceImpl implements ArbitrateViewService {
     public void removeCanalCursor(String destination, short clientId) {
         String path = String.format(CANAL_CURSOR_PATH, destination, String.valueOf(clientId));
         zookeeper.delete(path);
+    }
+
+    @Override
+    public void removeCanal(String destination, short clientId) {
+        String path = String.format(CANAL_DATA_PATH, destination, String.valueOf(clientId));
+        zookeeper.deleteRecursive(path);
     }
 
     public void removeCanal(String destination) {
